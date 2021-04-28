@@ -1,4 +1,4 @@
-import botgram from "botgram";
+import TelegramBot from "node-telegram-bot-api";
 import translete_text from './utils.js'
 import InterfaceLanguages from './utils_lang.js' 
 import dotenv from 'dotenv'
@@ -22,8 +22,15 @@ function User(_user) {
     });
 }
 
-function InterFaceBot(langs) { 
-    const bot = botgram(process.env.TOKEN)
+function InterFaceBot(langs) {
+    const bot = new TelegramBot(process.env.TOKEN,
+        {
+            webHook: {
+                port: process.env.PORT
+            }
+        }
+        )
+    bot.setWebHook(`${process.env.webhook_url}` + bot.token)
     const interfaceLang_ = new InterfaceLanguages(langs)
     function msg(user) {
         bot.message(true, async function (msg, reply, text) { 
@@ -50,150 +57,207 @@ function TranslateBot(langs) {
     const obj = InterFaceBot(langs)
     let user = null
     function start() {
-        obj.bot.command('start', async function (msg, reply) {
-            try {  
-                await reply.text('Привет, меня зовут Бот-Иванко\nЯ умею переводить на '+Object.keys(langs).length+' языков.\nНу что начнем, выбери команду \n /translate \n /settings')
-                user = new User(msg.user)
-            } catch (err) {
-                console.log(err)
-            }
-        })
-        obj.bot.command("translate", async function (msg, reply) {
+        obj.bot.onText(/\/start/, async function (msg) {
             try {
-                reply.action("typing");
-                let result = await reply.text('Вводите текст для перевода')
+                const { chat: { id } } = msg
+                let username = msg.from.first_name;
+                if (!username) {
+                    username = msg.from.username
+                }
+                user = await new User(msg.from) 
+                let start_text = "Привет, " + username + " 👋🏻 Я бот-переводчик. 😎 \n" +
+                    "Я умею переводить на " + Object.keys(langs).length + " языков. 🎓  \n" +
+                    "Выбери команду: \n" +
+                    "/translate - перевести текст \n" +
+                    "/settings - настройка \n" +
+                    "/about - о боте"   
+               
+                await obj.bot.sendMessage(id, start_text);
+
             } catch (err) {
                 console.log(err)
-            } finally { 
-                obj.msg(user)
             }
         })
-        obj.bot.command("settings", async function (msg, reply) {
+        obj.bot.onText(/\/about/, async function (msg) {
+            try {
+                const { chat: { id } } = msg
+                if (!user) {
+                    user = await new User(msg.from)
+                } 
+                obj.bot.sendMessage(id, 'Bot beta-version 1.3 \n' + Object.keys(langs).length + ' languages.\nAuthor ' + process.env.author)
+            } catch (err) {
+                console.log(err);
+            }
+        })
+        obj.bot.onText(/\/translate/, async function (msg) {
+            try {
+                const { chat: { id } } = msg
+                if (!user) {
+                    console.log('err');
+                    return
+                }
+                let username = msg.from.first_name;
+                if (!username) {
+                    username = msg.from.username
+                }
+ 
+                let lang = await user.getLanguage()
+                if (!lang) {
+                    obj.bot.sendMessage(id, username + ', вы не выбрали язык.\nВыбрать язык /changeLanguage')
+                } else {
+                    obj.bot.sendMessage(id, 'Выбан язык ' + lang + '\nВведите текст для перевода:')
+                    obj.bot.once("message", async function (msg) {
+                        const { chat: { id } } = msg
+                        const { text, document, entities } = msg
+                        if(entities){
+                            return
+                        }
+                        let result = await translete_text(text, lang)
+                        obj.bot.sendMessage(id, result + "\nЕще раз? /translate\nИзменить язык /changeLanguage")
+                    })
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })
+
+        obj.bot.onText(/\/settings/, async function (msg) {
             try {
                 let result = await reply.text('Настройка языка /setLanguage')
             } catch (err) {
-                console.log(err)
+                console.log(err);
             }
         })
-
-        obj.bot.command("setLanguage", async function (msg, reply) {
-            let result;
+        obj.bot.onText(/\/changeLanguage/, async function (msg) {
             try {
                 result = await reply.text('Выбери на какой язык переводить. Например English')
             } catch (err) {
-                console.log(err)
-            } finally {
-                reply.text(obj.interfaceLang_.getlang())
+                console.log(err);
             }
         })
-
-    }
-    function langs_commands() {
-        obj.bot.command("ar", async function (msg, reply) {
-            let result;
+        obj.bot.onText(/\/ar/, async function (msg) {
+            const { chat: { id } } = msg
+            obj.bot.sendMessage(id, "Язык установлен " + obj.interfaceLang_.getCode("ar") + " /translate")
             try {
-                result = await reply.text("Язык установлен  " + obj.interfaceLang_.getCode("ar") + " /translate")
-            } catch (err) {
-                console.log(err)
-            } finally {
+                if (!user) {
+                    user = await new User(msg.from, "ar")
+                }
                 user.setLanguage("ar")
-            }
-        })
-        obj.bot.command("hy", async function (msg, reply) {
-            let result;
-            try {
-                result = await reply.text("Язык установлен  " + obj.interfaceLang_.getCode("hy") + " /translate")
             } catch (err) {
                 console.log(err)
-            } finally {
+            }
+        })
+        obj.bot.onText(/\/hy/, async function (msg) {
+            const { chat: { id } } = msg
+            obj.bot.sendMessage(id, "Язык установлен " + obj.interfaceLang_.getCode("hy") + " /translate")
+            try {
+                if (!user) {
+                    user = await new User(msg.from, "hy")
+                }
                 user.setLanguage("hy")
-            }
-        })
-        obj.bot.command("az", async function (msg, reply) {
-            let result;
-            try {
-                result = await reply.text("Язык установлен  " + obj.interfaceLang_.getCode("az") + " /translate")
             } catch (err) {
                 console.log(err)
-            } finally {
+            }
+        })
+        obj.bot.onText(/\/az/, async function (msg) {
+            const { chat: { id } } = msg
+            obj.bot.sendMessage(id, "Язык установлен " + obj.interfaceLang_.getCode("az") + " /translate")
+            try {
+                if (!user) {
+                    user = await new User(msg.from, "az")
+                }
                 user.setLanguage("az")
-            }
-        })
-        obj.bot.command("en", async function (msg, reply) {
-            let result;
-            try {
-                result = await reply.text("Язык установлен  " + obj.interfaceLang_.getCode("en") + " /translate")
             } catch (err) {
                 console.log(err)
-            } finally {
+            }
+        })
+        obj.bot.onText(/\/en/, async function (msg) {
+            const { chat: { id } } = msg
+            obj.bot.sendMessage(id, "Язык установлен " + obj.interfaceLang_.getCode("en") + " /translate")
+            try {
+                if (!user) {
+                    user = await new User(msg.from, "en")
+                }
                 user.setLanguage("en")
-            }
-        })
-        obj.bot.command("fr", async function (msg, reply) {
-            let result;
-            try {
-                result = await reply.text("Язык установлен  " + obj.interfaceLang_.getCode("fr") + " /translate")
             } catch (err) {
                 console.log(err)
-            } finally {
+            }
+        })
+        obj.bot.onText(/\/fr/, async function (msg) {
+            const { chat: { id } } = msg
+            obj.bot.sendMessage(id, "Язык установлен " + obj.interfaceLang_.getCode("fr") + " /translate")
+            try {
+                if (!user) {
+                    user = await new User(msg.from, "fr")
+                }
                 user.setLanguage("fr")
-            }
-        })
-        obj.bot.command("de", async function (msg, reply) {
-            let result;
-            try {
-                result = await reply.text("Язык установлен  " + obj.interfaceLang_.getCode("de") + " /translate")
             } catch (err) {
                 console.log(err)
-            } finally {
+            }
+        })
+        obj.bot.onText(/\/de/, async function (msg) {
+            const { chat: { id } } = msg
+            obj.bot.sendMessage(id, "Язык установлен " + obj.interfaceLang_.getCode("de") + " /translate")
+            try {
+                if (!user) {
+                    user = await new User(msg.from, "de")
+                }
                 user.setLanguage("de")
-            }
-        })
-        obj.bot.command("ka", async function (msg, reply) {
-            let result;
-            try {
-                result = await reply.text("Язык установлен  " + obj.interfaceLang_.getCode("ka") + " /translate")
             } catch (err) {
                 console.log(err)
-            } finally {
+            }
+        })
+        obj.bot.onText(/\/ka/, async function (msg) {
+            const { chat: { id } } = msg
+            obj.bot.sendMessage(id, "Язык установлен " + obj.interfaceLang_.getCode("ka") + " /translate")
+            try {
+                if (!user) {
+                    user = await new User(msg.from, "ka")
+                }
                 user.setLanguage("ka")
-            }
-        })
-        obj.bot.command("ru", async function (msg, reply) {
-            let result;
-            try {
-                result = await reply.text("Язык установлен  " + obj.interfaceLang_.getCode("ru") + " /translate")
             } catch (err) {
                 console.log(err)
-            } finally {
+            }
+        })
+        obj.bot.onText(/\/ru/, async function (msg) {
+            const { chat: { id } } = msg
+            obj.bot.sendMessage(id, "Язык установлен " + obj.interfaceLang_.getCode("ru") + " /translate")
+            try {
+                if (!user) {
+                    user = await new User(msg.from, "ru")
+                }
                 user.setLanguage("ru")
-            }
-        })
-        obj.bot.command("tr", async function (msg, reply) {
-            let result;
-            try {
-                result = await reply.text("Язык установлен  " + obj.interfaceLang_.getCode("tr") + " /translate")
             } catch (err) {
                 console.log(err)
-            } finally {
+            }
+        })
+        obj.bot.onText(/\/turk/, async function (msg) {
+            const { chat: { id } } = msg
+            obj.bot.sendMessage(id, "Язык установлен " + obj.interfaceLang_.getCode("tr") + " /translate")
+            try {
+                if (!user) {
+                    user = await new User(msg.from, "tr")
+                }
                 user.setLanguage("tr")
-            }
-        })
-        obj.bot.command("uk", async function (msg, reply) {
-            let result;
-            try {
-                result = await reply.text("Язык установлен  " + obj.interfaceLang_.getCode("uk") + " /translate")
             } catch (err) {
                 console.log(err)
-            } finally {
+            }
+        })
+        obj.bot.onText(/\/uk/, async function (msg) {
+            const { chat: { id } } = msg
+            obj.bot.sendMessage(id, "Язык установлен " + obj.interfaceLang_.getCode("uk") + " /translate")
+            try {
+                if (!user) {
+                    user = await new User(msg.from, "uk")
+                }
                 user.setLanguage("uk")
+            } catch (err) {
+                console.log(err)
             }
         })
     }
     return Object.freeze({
-        start,
-        langs_commands
+        start
     });
 }
-
 export default TranslateBot;

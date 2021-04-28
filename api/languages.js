@@ -118,7 +118,7 @@ var langs = {
     'ka': 'Georgian',
     'de': 'German', 
     'ru': 'Russian',
-    'tr': 'Turkish',
+    // 'tr': 'Turkish',
     'uk': 'Ukrainian'
 }
 

@@ -1,6 +1,6 @@
 {
-  "name": "bot",
-  "version": "1.0.0",
+  "name": "telebot",
+  "version": "2.0.0",
   "description": "bot telegram",
   "main": "index.js",
   "type": "module",
@@ -10,8 +10,16 @@
   "author": "Ramazanov Rustam",
   "license": "ISC",
   "dependencies": {
-    "botgram": "^2.2.0",
     "dotenv": "^8.2.0",
+    "node-telegram-bot-api": "^0.52.0",
     "translatte": "^3.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rustamrv/bot_node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rustamrv/bot_node/issues"
+  },
+  "homepage": "https://github.com/rustamrv/bot_node#readme"
 }
