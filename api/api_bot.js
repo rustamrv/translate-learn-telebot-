@@ -32,24 +32,10 @@ function InterFaceBot(langs) {
         )
     bot.setWebHook(`${process.env.webhook_url}` + bot.token)
     const interfaceLang_ = new InterfaceLanguages(langs)
-    function msg(user) {
-        bot.message(true, async function (msg, reply, text) { 
-            if (!user.getLanguage()) {
-                await reply.text('Установите язык /setLanguage');
-            } else {
-                try {
-                    let result = await translete_text(msg.text, user.getLanguage())
-                    reply.text(result)
-                } catch (err) {
-                    console.log(err)
-                }
-            }
-        })
-    }
+     
     return Object.freeze({
         bot,
-        interfaceLang_,
-        msg
+        interfaceLang_
     });
 }
 

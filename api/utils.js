@@ -1,13 +1,8 @@
 import translatte from "translatte";
 
-var translete_text = function(msg, to_lang) {
-    return new Promise(function (resolve, reject) { 
-        translatte(msg, { to: to_lang }).then(res => {
-            resolve(res.text);
-        }).catch(err => {
-            resolve(err.message);
-        });
-    });
+var translete_text = async function(msg, to_lang) {
+    let res = await translatte(msg, { to: to_lang }) 
+    return res.text
 }
 
 export default translete_text; 
