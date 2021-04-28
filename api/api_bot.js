@@ -109,14 +109,18 @@ function TranslateBot(langs) {
 
         obj.bot.onText(/\/settings/, async function (msg) {
             try {
-                let result = await reply.text('Настройка языка /setLanguage')
+                const { chat: { id } } = msg
+                obj.bot.sendMessage(id,'Настройка языка /changeLanguage')
             } catch (err) {
                 console.log(err);
             }
         })
         obj.bot.onText(/\/changeLanguage/, async function (msg) {
             try {
-                result = await reply.text('Выбери на какой язык переводить. Например English')
+                const { chat: { id } } = msg
+                let lang = await obj.interfaceLang_.getlang()
+                obj.bot.sendMessage(id,'Выбери на какой язык переводить. Например English')
+                obj.bot.sendMessage(id, lang)
             } catch (err) {
                 console.log(err);
             }

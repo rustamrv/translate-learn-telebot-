@@ -8,7 +8,7 @@ class InterfaceLanguages {
     getlang() {
         let str_langs = ''
         for (var key in this.langs) {
-            str_langs = str_langs + "/"+ key + '-' + this.langs[key] + " \n"
+            str_langs = str_langs + "/"+ key + '\t\t\t-\t\t\t' + this.langs[key] + " \n"
         }
         return str_langs
     }
