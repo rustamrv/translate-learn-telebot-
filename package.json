@@ -1,23 +1,18 @@
 {
-  "name": "telebot",
-  "version": "2.0.0",
-  "description": "bot telegram",
+  "name": "translate_learn_telebot",
+  "version": "1.3.0",
+  "description": "translate learn telebot",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "Ramazanov Rustam",
-  "license": "ISC",
-  "dependencies": {
-    "dotenv": "^8.2.0",
-    "node-telegram-bot-api": "^0.52.0",
-    "translatte": "^3.0.0"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rustamrv/bot_node.git"
   },
+  "author": "telegram @rustamrv",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/rustamrv/bot_node/issues"
   },

@@ -1,2 +1,2 @@
-# bot_node
-test
+# The node.js translate learn telebot
+
