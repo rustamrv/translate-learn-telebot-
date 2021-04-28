@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/rustamrv/bot_node/issues"
   },
-  "homepage": "https://github.com/rustamrv/bot_node#readme"
+  "homepage": "https://github.com/rustamrv/bot_node#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "node-telegram-bot-api": "^0.52.0",
+    "translatte": "^3.0.0"
+  }
 }
