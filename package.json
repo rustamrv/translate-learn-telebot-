@@ -20,6 +20,7 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "node-telegram-bot-api": "^0.52.0",
+    "readme-md-generator": "^1.0.0",
     "translatte": "^3.0.0"
   }
 }
