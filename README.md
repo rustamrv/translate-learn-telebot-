@@ -7,7 +7,7 @@
   <a href="https://github.com/rustamrv/bot_node/graphs/commit-activity" target="_blank">
     <img alt="Maintenance" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" />
   </a>
-  <a href="https://github.com/rustamrv/bot_node/LICENSE" target="_blank">
+  <a href="https://github.com/rustamrv/bot_node/blob/main/LICENSE" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/github/license/rustamrv/translate_learn_telebot" />
   </a>
 </p>
