@@ -26,15 +26,9 @@ npm install
 ```sh
 npm run start
 ```
-
-## Author
-
-👤 **telegram [@rustamrv](https://t.me/rustamrv)**
-
-👤 **Github: [@rustamrv](https://github.com/rustamrv)**
   
 ## 📝 License
 
-Copyright © 2021 telegram [@rustamrv](https://t.me/rustamrv).<br />
+Copyright © 2021 <br />
 This project is [ISC](https://github.com/rustamrv/bot_node/blob/master/LICENSE) licensed.
  
